@@ -1,4 +1,9 @@
-.idea/
+/target/
+
+
 target/
 **/target
-aiops.iml
+
+.idea/
+.settings/
+artifacts/
