@@ -2,12 +2,10 @@ package com.ai.platform.repository;
 
 
 import com.ai.pojo.Indexs;
-import com.ai.pojo.LogType;
 import com.ai.pojo.Tail;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -98,14 +96,14 @@ public class TailRepositoryImpl implements TailRepository{
         QueryBuilder qb = QueryBuilders.matchAllQuery();
         SearchResponse sr = client.prepareSearch("elk_log_type").setQuery(qb).setQuery(qb).setScroll(TimeValue.timeValueMinutes(2)).get();
         SearchHits hits = sr.getHits();
-        String i = "\n";
+        //String i = "\n";
         for (SearchHit hit : hits) {
             ls.add(hit.getSourceAsString());
             //map.put(i,hit.getSourceAsString());
             //System.out.println(hit.getSourceAsString());
             //System.out.println(ls);
         }
-
+        //System.out.println(ls);
         return ls;
     }
 

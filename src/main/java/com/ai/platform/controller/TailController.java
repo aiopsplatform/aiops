@@ -1,6 +1,7 @@
 package com.ai.platform.controller;
 
 import com.ai.platform.repository.TailRepository;
+import com.ai.pojo.Index;
 import com.ai.pojo.Indexs;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,27 +16,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/tail")
+@RequestMapping("/index")
 public class TailController {
 
 
     @Autowired
     private TailRepository tailRepository;
 
-    //下拉框，查询所有索引文件的名称
-    @GetMapping("/taillist")
-    public String tailList() throws UnknownHostException {
-
-        List ls = tailRepository.tailList();
-
-        Gson gson = new Gson();
-
-        String st = gson.toJson(ls);
-
-        return st;
-
-        //System.out.println(st);
-    }
+//    //下拉框，查询所有索引文件的名称
+//    @GetMapping("/indexAll")
+//    public String tailList() throws UnknownHostException {
+//
+//        List ls = tailRepository.tailList();
+//
+//        Gson gson = new Gson();
+//
+//        String st = gson.toJson(ls);
+//
+//        return st;
+//
+//        //System.out.println(st);
+//    }
 
 
     //选定索引名称后，根据指定索引文件名称获取对应的所有日志文件
@@ -55,10 +56,12 @@ public class TailController {
 
         Gson gson2 = new Gson();
         List ls2 = tailRepository.getElkLogType();
+        System.out.println(ls2);
+        System.out.println(gson2.toJson(ls2));
         String type = gson2.toJson(ls2).replace("\\n", "");
         String type1 = type.replace("\\","");
         String type2 = type1.replace(" ", "");
-        System.out.println(type2);
+        //System.out.println(type2);
         return type2;
     }
 
@@ -68,21 +71,21 @@ public class TailController {
 
 
 
-//    @GetMapping("/taillist")
-//    public String getIndex() {
-//        Gson gson = new Gson();
-//
-//        Index index = new Index(1, "indexlog", "string", "logstash", "logstash");
-//        Index index2 = new Index(2, "indexlog2", "string2", "nginx", "nginx");
-//        Index index3 = new Index(3, "indexlog3", "string3", "Tomcat", "Tomcat");
-//        List ls = new ArrayList();
-//        ls.add(index);
-//        ls.add(index2);
-//        ls.add(index3);
-//
-//        String st = gson.toJson(ls);
-//
-//
-//        return st;
-//    }
+    @GetMapping("/indexlist")
+    public String getIndex() {
+        Gson gson = new Gson();
+
+        Index index = new Index(1, "indexlog", "string", "logstash", "logstash");
+        Index index2 = new Index(2, "indexlog2", "string2", "nginx", "nginx");
+        Index index3 = new Index(3, "indexlog3", "string3", "Tomcat", "Tomcat");
+        List ls = new ArrayList();
+        ls.add(index);
+        ls.add(index2);
+        ls.add(index3);
+
+        String st = gson.toJson(ls);
+        //System.out.println(st);
+
+        return st;
+    }
 }
