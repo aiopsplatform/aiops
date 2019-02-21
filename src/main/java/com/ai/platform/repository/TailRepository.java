@@ -5,7 +5,6 @@ import com.ai.pojo.Tail;
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Map;
 
 public interface TailRepository  {
 
@@ -15,4 +14,5 @@ public interface TailRepository  {
 
     List getElkLogType() throws UnknownHostException;
 
+    List selectByIndex(String indexes) throws UnknownHostException;
 }

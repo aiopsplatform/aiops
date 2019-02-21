@@ -34,9 +34,6 @@ public class TailRepositoryImpl implements TailRepository{
     public static Set set;
     public static Map map;
 
-
-
-
     //获取ELK客户端
     public static TransportClient getClient() throws UnknownHostException {
         //指定ES集群
@@ -62,8 +59,7 @@ public class TailRepositoryImpl implements TailRepository{
         return map ;
     }
 
-
-    //获取所有索引名称的方法
+    //获取所有索引名称返回给前端
     @Override
     public List<Tail> tailList() throws UnknownHostException {
 
@@ -71,6 +67,7 @@ public class TailRepositoryImpl implements TailRepository{
 
         return new ArrayList<Tail>(map1.values());
     }
+
 
     //根据指定索引文件名称获取对应的所有日志文件
     @Override
@@ -82,7 +79,6 @@ public class TailRepositoryImpl implements TailRepository{
         SearchHits hits = sr.getHits();
         for (SearchHit hit : hits) {
             ls.add(hit);
-            //System.out.println(hit.getSourceAsString());
         }
         return ls;
     }
@@ -96,21 +92,41 @@ public class TailRepositoryImpl implements TailRepository{
         QueryBuilder qb = QueryBuilders.matchAllQuery();
         SearchResponse sr = client.prepareSearch("elk_log_type").setQuery(qb).setQuery(qb).setScroll(TimeValue.timeValueMinutes(2)).get();
         SearchHits hits = sr.getHits();
-        //String i = "\n";
         for (SearchHit hit : hits) {
             ls.add(hit.getSourceAsString());
-            //map.put(i,hit.getSourceAsString());
-            //System.out.println(hit.getSourceAsString());
-            //System.out.println(ls);
         }
-        //System.out.println(ls);
         return ls;
     }
 
 
 
+    //根据请求中携带的请求参数indexes对应索引名称后到后台进行索引文件的查询
+    @Override
+    public List selectByIndex(String indexes) throws UnknownHostException{
+        String indexName =null;
 
+        if (indexes.equals("0")){
+            indexName="logstash-nginx-access-log";
+        }
+        else if (indexes.equals("1")){
+            indexName="filebeat-6.5.3-2019.01.23";
+        }else {
+            indexName=".kibana_1";
+        }
 
+        List elkList = new ArrayList();
 
+        TransportClient client = getClient();
+
+        QueryBuilder qb = QueryBuilders.prefixQuery("_index", indexName);
+        SearchResponse sr = client.prepareSearch(indexName).setQuery(qb).setSize(10).get();
+        SearchHits hits = sr.getHits();
+
+        for (SearchHit hit : hits) {
+            elkList.add(hit);
+        }
+        return elkList;
+
+    }
 
 }

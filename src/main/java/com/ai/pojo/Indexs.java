@@ -2,19 +2,28 @@ package com.ai.pojo;
 
 public class Indexs {
 
-    private String sysLog;
+    private Integer id;
 
-    public Indexs(String sysLog) {
-        this.sysLog = sysLog;
+    private String name;
+
+    public Indexs(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public String getSysLog() {
-        return sysLog;
+    public Integer getId() {
+        return id;
     }
 
-    public void setSysLog(String sysLog) {
-        this.sysLog = sysLog;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
