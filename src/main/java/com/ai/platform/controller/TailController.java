@@ -104,13 +104,17 @@ public class TailController {
      */
     @PostMapping(value = "selectByIndex")
     @ResponseBody
-    public String selectByIndex(HttpServletRequest request) throws UnknownHostException{
+    public String selectByIndex(@RequestBody JSONObject jsonObject) throws UnknownHostException{
         Gson selectGson = new Gson();
+
+
+
+        String indexes = jsonObject.get("indexes").toString();
+        System.out.println(indexes);
 
         String logs;
         String jsonLog = null;
-        try {
-            String indexes = request.getParameter("indexes");
+
 
             List selectByIndexList = tailRepository.selectByIndex(indexes);
 
@@ -118,7 +122,6 @@ public class TailController {
 
             //将list转化为string字符串
             logs = list1.toString();
-            //System.out.println(logs);
 
             //json第一层
             JSONObject pa = JSONObject.fromObject(logs);
@@ -149,32 +152,17 @@ public class TailController {
 
             jsonLog = selectGson.toJson(logList);
 
-            //System.out.println(jsonLog);
+            String responseBody = jsonLog.replace("[", "");
 
+            String finallyResponse = responseBody.replace("]", "");
 
+        System.out.println(finallyResponse);
 
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-
-        return jsonLog;
+        return finallyResponse;
 
     }
 
 
 
-
-
-//    //根据前端传来的指定索引文件名称获取对应的所有日志文件
-//    @GetMapping("/")
-//    public String selectLog(@PathVariable String sysLog) throws UnknownHostException {
-//
-//        List<Indexs> ls1 = tailRepository.selectLog();
-//        Gson gson1 = new Gson();
-//        String st1 = gson1.toJson(ls1);
-//        return st1;
-//    }
 
 }
