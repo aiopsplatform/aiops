@@ -6,7 +6,7 @@ public class Log {
     private String _type;
     private String _id;
     private String remote_ip;
-    private String timestamp;
+    private String time;
     private String http_version;
     private String logtype;
     private String request;
@@ -15,13 +15,13 @@ public class Log {
     private String user_name;
 
     public Log(String _index, String _type, String _id, String remote_ip,
-               String timestamp, String http_version, String logtype, String request,
+               String time, String http_version, String logtype, String request,
                String request_action, String message, String user_name) {
         this._index = _index;
         this._type = _type;
         this._id = _id;
         this.remote_ip = remote_ip;
-        this.timestamp = timestamp;
+        this.time = time;
         this.http_version = http_version;
         this.logtype = logtype;
         this.request = request;
@@ -62,12 +62,12 @@ public class Log {
         this.remote_ip = remote_ip;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getTime() {
+        return time;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getHttp_version() {
