@@ -1,10 +1,10 @@
-package com.ai.platform.repository;
+package com.ai.platform.dao;
 
 
+import com.ai.platform.service.TailDao;
 import com.ai.pojo.IndexDate;
 import com.ai.pojo.Indexs;
 import com.ai.pojo.Tail;
-import net.sf.json.JSONObject;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 @Repository
-public class TailRepositoryImpl implements TailRepository{
+public class TailDaoImpl implements TailDao {
 
     public static String clusterName = "cluster.name";
     public static String appName = "my-application";
@@ -49,18 +49,18 @@ public class TailRepositoryImpl implements TailRepository{
 
 
     //查询ES中所有的索引
-    private Map<Integer,String> getIndex() throws UnknownHostException{
+    private Map<Integer, String> getIndex() throws UnknownHostException {
         TransportClient client = getClient();
         ActionFuture<IndicesStatsResponse> isr = client.admin().indices().stats(new IndicesStatsRequest().all());
         Set<String> set = isr.actionGet().getIndices().keySet();
 
-        Map<Integer ,String> map = new HashMap<>();
-        int i =0;
-        for(String set1: set ){
+        Map<Integer, String> map = new HashMap<>();
+        int i = 0;
+        for (String set1 : set) {
             map.put(i, set1);
             i++;
         }
-        return map ;
+        return map;
     }
 
     //获取所有索引名称返回给前端
@@ -90,7 +90,7 @@ public class TailRepositoryImpl implements TailRepository{
 
     //根据指定的索引文件
     @Override
-    public List getElkLogType() throws UnknownHostException{
+    public List getElkLogType() throws UnknownHostException {
         List ls = new ArrayList();
         TransportClient client = getClient();
         QueryBuilder qb = QueryBuilders.matchAllQuery();
@@ -103,19 +103,17 @@ public class TailRepositoryImpl implements TailRepository{
     }
 
 
-
     //根据请求中携带的请求参数indexes对应索引名称后到后台进行索引文件的查询
     @Override
-    public List<SearchHit> selectByIndex(String indexes) throws UnknownHostException{
-        String indexName =null;
+    public List<SearchHit> selectByIndex(String indexes) throws UnknownHostException {
+        String indexName = null;
 
-        if (indexes.equals("0")){
-            indexName="logstash-nginx-access-log";
-        }
-        else if (indexes.equals("1")){
-            indexName="filebeat-6.5.3-2019.01.23";
-        }else {
-            indexName=".kibana_1";
+        if (indexes.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        } else if (indexes.equals("1")) {
+            indexName = "filebeat-6.5.3-2019.01.23";
+        } else {
+            indexName = ".kibana_1";
         }
 
         List elkList = new ArrayList();
@@ -137,7 +135,7 @@ public class TailRepositoryImpl implements TailRepository{
     根据索引名称、开始时间和结束时间进行查询
      */
     @Override
-    public List<SearchHit> selectByTime(IndexDate indexDate) throws UnknownHostException{
+    public List<SearchHit> selectByTime(IndexDate indexDate) throws UnknownHostException {
 
         List indexByTimeList = new ArrayList();
 
@@ -152,8 +150,8 @@ public class TailRepositoryImpl implements TailRepository{
         System.out.println(endTime);
 
         String indexName = null;
-        if (indexesName.equals("0")){
-            indexName="logstash-nginx-access-log";
+        if (indexesName.equals("0")) {
+            indexName = "logstash-nginx-access-log";
         }
 
 
@@ -164,9 +162,9 @@ public class TailRepositoryImpl implements TailRepository{
             indexByTimeList.add(hit);
 
         }
+        System.out.println(indexByTimeList);
         return indexByTimeList;
     }
-
 
 
     @Override
@@ -177,16 +175,17 @@ public class TailRepositoryImpl implements TailRepository{
 
         //根据前端传来的indexes判断id的值，同时确定indexes的真实索引名称
         String indexName = null;
-        if (indexes.equals("0")){
-            indexName="logstash-nginx-access-log";
+        if (indexes.equals("0")) {
+            indexName = "logstash-nginx-access-log";
         }
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         SearchResponse searchResponse = client.prepareSearch(indexName).
-                                        setQuery(queryBuilder).addSort("create_time", SortOrder.DESC).
-                                        setSize(2).execute().actionGet();
+                setQuery(queryBuilder).
+                addSort("create_time", SortOrder.DESC).
+                setSize(2).execute().actionGet();
         SearchHits hits = searchResponse.getHits();
-        for (SearchHit hit:hits){
+        for (SearchHit hit : hits) {
             realTimeList.add(hit);
         }
 

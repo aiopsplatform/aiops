@@ -1,10 +1,9 @@
 package com.ai.platform.controller;
 
-import com.ai.platform.repository.TailRepository;
+import com.ai.platform.service.TailDao;
 import com.ai.pojo.IndexDate;
 import com.ai.pojo.Index;
 import com.ai.pojo.Indexs;
-import com.ai.pojo.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import net.sf.json.JSONObject;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @CrossOrigin
@@ -24,13 +21,13 @@ public class TailController {
 
 
     @Autowired
-    private TailRepository tailRepository;
+    private TailDao tailDao;
 
     //下拉框，查询所有索引文件的名称
     @GetMapping("/indexAll")
     public String tailList() throws UnknownHostException {
 
-        List ls = tailRepository.tailList();
+        List ls = tailDao.tailList();
 
         Gson gson = new Gson();
 
@@ -64,7 +61,7 @@ public class TailController {
 
     //查询ElkLogType
     @GetMapping("/getElkLogType")
-    public List getElkLogType() throws UnknownHostException{
+    public List getElkLogType() throws UnknownHostException {
 
         Gson gson2 = new Gson();
         List ElkLogTypeList = new ArrayList();
@@ -106,7 +103,7 @@ public class TailController {
      */
     @PostMapping(value = "selectByIndex")
     @ResponseBody
-    public String selectByIndex(@RequestBody JSONObject jsonObject) throws Exception{
+    public String selectByIndex(@RequestBody JSONObject jsonObject) throws Exception {
 
         Gson selectGson = new Gson();
 
@@ -121,12 +118,12 @@ public class TailController {
         IndexDate indexDate = new IndexDate(indexes, start_Time, end_Time);
 
         //将所有日志存放到list数组中
-        List<SearchHit> selectIndexByTimeList = tailRepository.selectByTime(indexDate);
+        List<SearchHit> selectIndexByTimeList = tailDao.selectByTime(indexDate);
 
         List list3 = new ArrayList();
 
         //需要将list转换成json格式
-        for (SearchHit logMessage  : selectIndexByTimeList){
+        for (SearchHit logMessage : selectIndexByTimeList) {
             String message = logMessage.getSourceAsMap().get("message").toString();
             list3.add(message);
         }
@@ -136,7 +133,7 @@ public class TailController {
 
 //        //System.out.println(selectByIndexList);
 //
-//        //List<SearchHit> selectByTime = tailRepository.selectByTime(start_Time, end_Time);
+//        //List<SearchHit> selectByTime = tailDao.selectByTime(start_Time, end_Time);
 //
 //
 //        List list2 = new ArrayList();
@@ -183,13 +180,14 @@ public class TailController {
 
     /**
      * 该方法是使用时间作为范围查询的条件
+     *
      * @param jsonObject
      * @return
      * @throws Exception
      */
     @PostMapping("selectByTime")
     @ResponseBody
-    public String selectByTime(@RequestParam JSONObject jsonObject) throws Exception{
+    public String selectByTime(@RequestParam JSONObject jsonObject) throws Exception {
 
         //解析indexes对应的id
         String indexes = jsonObject.get("indexes").toString();
@@ -198,12 +196,12 @@ public class TailController {
         //解析end_time对应的结束时间
         String endTime = jsonObject.get("end_time").toString();
         IndexDate indexDate = new IndexDate(indexes, startTime, endTime);
-        List<SearchHit> selectIndexByTimeList = tailRepository.selectByTime(indexDate);
-        Map<String,String> map = new HashMap();
+        List<SearchHit> selectIndexByTimeList = tailDao.selectByTime(indexDate);
+        Map<String, String> map = new HashMap();
         //Gson selectGson = new Gson();
         String json = null;
         //需要将map转换成json格式
-        for (SearchHit logMessage  : selectIndexByTimeList){
+        for (SearchHit logMessage : selectIndexByTimeList) {
             String message = logMessage.getSourceAsMap().get("message").toString();
             map.put("message", message);
             ObjectMapper mapper = new ObjectMapper();
@@ -218,7 +216,7 @@ public class TailController {
      */
     @PostMapping(value = "selectRealTimeQuery")
     @ResponseBody
-    public String selectRealTimeQuery(@RequestBody JSONObject jsonObject) throws UnknownHostException{
+    public String selectRealTimeQuery(@RequestBody JSONObject jsonObject) throws UnknownHostException {
 
         Gson realTimeGson = new Gson();
         List realTimeList = new ArrayList();
@@ -226,21 +224,29 @@ public class TailController {
         //解析索引名称对应的id
         String indexes = jsonObject.get("indexes").toString();
 
-        List<SearchHit> selectRealTime = tailRepository.selectRealTimeQuery(indexes);
+        List<SearchHit> selectRealTime = tailDao.selectRealTimeQuery(indexes);
 
         //需要将list转换成json格式
-        //需要将list转换成json格式
-        for (SearchHit logMessage  : selectRealTime){
+        for (SearchHit logMessage : selectRealTime) {
             String message = logMessage.getSourceAsMap().get("message").toString();
             realTimeList.add(message);
         }
         //将list转换为json格式返回给前端
         String realJson = realTimeGson.toJson(realTimeList);
+
         return realJson;
 
     }
 
+    /**
+     * 异常统计
+     */
+    @PostMapping(value = "exceptionCount")
+    @ResponseBody
+    public String exceptionCount(@RequestBody JSONObject jsonObject) {
 
 
+        return null;
+    }
 
 }
