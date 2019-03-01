@@ -1,12 +1,11 @@
 package com.ai.platform.service;
 
-import com.ai.pojo.IndexDate;
-import com.ai.pojo.Indexs;
-import com.ai.pojo.Tail;
+import com.ai.pojo.*;
 import org.elasticsearch.search.SearchHit;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 public interface TailDao {
 
@@ -21,4 +20,8 @@ public interface TailDao {
     List<SearchHit> selectByTime(IndexDate indexDate) throws UnknownHostException;//根据开始时间和结束时间进行查询
 
     List<SearchHit> selectRealTimeQuery(String indexes) throws UnknownHostException;//实时查询
+
+    Map count(ExceptionCount exceptionCount) throws UnknownHostException;//异常统计
+
+    Map selectSlowCount(SlowCountBean slowCountBean) throws UnknownHostException;
 }

@@ -1,0 +1,341 @@
+PUT /logstash-nginx-access-log/doc/_mapping
+{
+"doc" : {
+    "dynamic_templates" : [
+      {
+        "message_field" : {
+          "path_match" : "message",
+          "match_mapping_type" : "string",
+          "mapping" : {
+            "norms" : false,
+            "type" : "text"
+          }
+        }
+      },
+      {
+        "string_fields" : {
+          "match" : "*",
+          "match_mapping_type" : "string",
+          "mapping" : {
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            },
+            "norms" : false,
+            "type" : "text"
+          }
+        }
+      }
+    ],
+    "properties" : {
+      "@timestamp" : {
+        "type" : "date"
+      },
+      "@version" : {
+        "type" : "keyword"
+      },
+      "agent" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "beat" : {
+        "properties" : {
+          "hostname" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "name" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "version" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "bytes" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "create_time" : {
+        "type" : "date"
+      },
+      "geoip" : {
+        "dynamic" : "true",
+        "properties" : {
+          "ip" : {
+            "type" : "ip"
+          },
+          "latitude" : {
+            "type" : "half_float"
+          },
+          "location" : {
+            "type" : "geo_point"
+          },
+          "longitude" : {
+            "type" : "half_float"
+          }
+        }
+      },
+      "host" : {
+        "properties" : {
+          "architecture" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "containerized" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "os" : {
+            "properties" : {
+              "codename" : {
+                "type" : "text",
+                "norms" : false,
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "family" : {
+                "type" : "text",
+                "norms" : false,
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "platform" : {
+                "type" : "text",
+                "norms" : false,
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "version" : {
+                "type" : "text",
+                "norms" : false,
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "http_version" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "input" : {
+        "properties" : {
+          "type" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "logtype" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "message" : {
+        "type" : "text",
+        "norms" : false
+      },
+      "offset" : {
+        "type" : "long"
+      },
+      "prospector" : {
+        "properties" : {
+          "type" : {
+            "type" : "text",
+            "norms" : false,
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "referrer" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "remote_ip" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request_action" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "response" : {
+        "type" : "keyword",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "source" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "tags" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "time" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "type" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "user_name" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      }
+    }
+  }
+}

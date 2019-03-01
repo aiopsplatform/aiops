@@ -2,9 +2,7 @@ package com.ai.platform.dao;
 
 
 import com.ai.platform.service.TailDao;
-import com.ai.pojo.IndexDate;
-import com.ai.pojo.Indexs;
-import com.ai.pojo.Tail;
+import com.ai.pojo.*;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
@@ -18,6 +16,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.stereotype.Repository;
@@ -144,11 +145,6 @@ public class TailDaoImpl implements TailDao {
         String startTime = indexDate.getStartTime();
         String endTime = indexDate.getEndTime();
 
-        //打印从前端得到的开始时间，结束时间和id
-        System.out.println(indexesName);
-        System.out.println(startTime);
-        System.out.println(endTime);
-
         String indexName = null;
         if (indexesName.equals("0")) {
             indexName = "logstash-nginx-access-log";
@@ -162,11 +158,16 @@ public class TailDaoImpl implements TailDao {
             indexByTimeList.add(hit);
 
         }
-        System.out.println(indexByTimeList);
         return indexByTimeList;
     }
 
 
+    /**
+     * 实时查询数据
+     * @param indexes
+     * @return
+     * @throws UnknownHostException
+     */
     @Override
     public List<SearchHit> selectRealTimeQuery(String indexes) throws UnknownHostException {
 
@@ -190,6 +191,97 @@ public class TailDaoImpl implements TailDao {
         }
 
         return realTimeList;
+    }
+
+
+    /**
+     * 异常统计
+     *
+     */
+    @Override
+    public Map count(ExceptionCount exceptionCount) throws UnknownHostException{
+        TransportClient client = getClient();
+        Map map = new HashMap();
+
+        String indexes = exceptionCount.getIndexName();
+        String indexType = exceptionCount.getIndexType();
+        String beginTime = exceptionCount.getBegin_time();
+        String endTime = exceptionCount.getEnd_time();
+
+        String indexName = null;
+        if (indexes.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        String type = null;
+        if(indexType.equals("1")){
+            type = "doc";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+
+        //按异常进行分组聚合
+        AggregationBuilder termsBuilder = AggregationBuilders.terms("by_response").field("response");
+
+        SearchResponse searchResponse = client.prepareSearch(indexName).
+                setTypes(type).
+                setQuery(qb1).
+                addAggregation(termsBuilder).
+                execute().actionGet();
+
+        Terms terms = searchResponse.getAggregations().get("by_response");
+
+        //循环遍历bucket桶
+        for (Terms.Bucket entry: terms.getBuckets() ){
+            map.put(entry.getKey().toString(), entry.getDocCount());
+        }
+        return map;
+    }
+
+
+    /**
+     *慢请求统计0-1秒的请求
+     */
+    @Override
+    public Map selectSlowCount(SlowCountBean slowCountBean) throws UnknownHostException{
+
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
+
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder 
+
+        //根据offset字段大小进行聚合
+
+        QueryBuilder boolTerms = QueryBuilders.boolQuery().filter(qbTime);
+
+
+        //按offset字段进行分组
+        AggregationBuilder termsOffset = AggregationBuilders.terms("by_offset").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                            setQuery(boolTerms).
+                            addAggregation(termsOffset).execute().actionGet();
+
+        Terms terms = sr.getAggregations().get("by_offset");
+
+        Map map = new HashMap();
+
+        //循环遍历bucket桶
+        for (Terms.Bucket entry: terms.getBuckets() ){
+            map.put(entry.getKey().toString(), entry.getDocCount());
+        }
+        return map;
     }
 
 }
