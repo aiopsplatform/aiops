@@ -23,5 +23,10 @@ public interface TailDao {
 
     Map count(ExceptionCount exceptionCount) throws UnknownHostException;//异常统计
 
-    Map selectSlowCount(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount1(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount2(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount3(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount4(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount5(SlowCountBean slowCountBean) throws UnknownHostException;
+    Long selectSlowCount6(SlowCountBean slowCountBean) throws UnknownHostException;
 }

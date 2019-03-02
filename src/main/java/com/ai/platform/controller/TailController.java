@@ -62,21 +62,17 @@ public class TailController {
     //查询ElkLogType
     @GetMapping("/getElkLogType")
     public List getElkLogType() throws UnknownHostException {
-
         List elkLogTypeList = new ArrayList();
 
-        Indexs indexs = new Indexs(0, "logstash-nginx-access-log");
-        Indexs indexs1 = new Indexs(1, "filebeat-6.5.3-2019.01.23");
-        Indexs indexs2 = new Indexs(2, ".kibana_1");
+        List list = tailDao.tailList();
 
+        Indexs indexs = null;
+        for (int i =0;i<list.size();i++){
+        indexs = new Indexs(i, list.get(i).toString());
         elkLogTypeList.add(indexs);
-        elkLogTypeList.add(indexs1);
-        elkLogTypeList.add(indexs2);
-
-        //System.out.println(elkLogTypeList);
+        }
 
         return elkLogTypeList;
-
     }
 
 
@@ -167,11 +163,6 @@ public class TailController {
         String beginTime = jsonObject.get("begin_time").toString();
         String endTime = jsonObject.get("end_time").toString();
 
-        System.out.println(indexes);
-        System.out.println(type);
-        System.out.println(beginTime);
-        System.out.println(endTime);
-
         ExceptionCount exceptionCount = new ExceptionCount(indexes, type, beginTime, endTime);
         Map selectExceptionCount = tailDao.count(exceptionCount);
         List list = new ArrayList();
@@ -189,20 +180,42 @@ public class TailController {
      */
     @PostMapping(value = "slowRequestCount")
     @ResponseBody
-    public Map slowCount(@RequestBody JSONObject jsonObject) throws UnknownHostException{
+    public List slowCount(@RequestBody JSONObject jsonObject) throws UnknownHostException{
 
         //从请求中获取对应字段的参数
         String index = jsonObject.get("indexes").toString();
         String beginTime = jsonObject.get("begin_time").toString();
         String endTime = jsonObject.get("end_time").toString();
-
+        List list = new ArrayList();
         SlowCountBean slowCountBean = new SlowCountBean(index, beginTime, endTime);
 
-        Map slowCountMap = tailDao.selectSlowCount(slowCountBean);
+        //统计0-1秒的请求次数
+        Long value1 = tailDao.selectSlowCount1(slowCountBean);
+        //统计1-2秒的请求次数
+        Long value2 = tailDao.selectSlowCount2(slowCountBean);
+        //统计2-3秒的请求次数
+        Long value3 = tailDao.selectSlowCount3(slowCountBean);
+        //统计3-4秒的请求次数
+        Long value4 = tailDao.selectSlowCount4(slowCountBean);
+        //统计4-5秒的请求次数
+        Long value5 = tailDao.selectSlowCount5(slowCountBean);
+        //统计5-6秒的请求次数
+        Long value6 = tailDao.selectSlowCount6(slowCountBean);
 
-        JSONObject json = JSONObject.fromObject(slowCountMap);
+        PartCount partCount1 = new PartCount("0-1", value1);
+        PartCount partCount2 = new PartCount("1-2", value2);
+        PartCount partCount3 = new PartCount("2-3", value3);
+        PartCount partCount4 = new PartCount("3-4", value4);
+        PartCount partCount5 = new PartCount("4-5", value5);
+        PartCount partCount6 = new PartCount("5-6", value6);
+        list.add(partCount1);
+        list.add(partCount2);
+        list.add(partCount3);
+        list.add(partCount4);
+        list.add(partCount5);
+        list.add(partCount6);
 
-        return json;
+        return list;
     }
 
 

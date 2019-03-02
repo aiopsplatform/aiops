@@ -19,6 +19,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.sum.Sum;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.stereotype.Repository;
@@ -244,7 +246,7 @@ public class TailDaoImpl implements TailDao {
      *慢请求统计0-1秒的请求
      */
     @Override
-    public Map selectSlowCount(SlowCountBean slowCountBean) throws UnknownHostException{
+    public Long selectSlowCount1(SlowCountBean slowCountBean) throws UnknownHostException{
 
         TransportClient client = getClient();
         String index = slowCountBean.getIndex();
@@ -259,29 +261,178 @@ public class TailDaoImpl implements TailDao {
         //按时间进行范围查询
         QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
         //按请求0-1秒时间进行统计
-        QueryBuilder 
-
-        //根据offset字段大小进行聚合
-
-        QueryBuilder boolTerms = QueryBuilders.boolQuery().filter(qbTime);
-
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(0).to(1000,true);
 
         //按offset字段进行分组
-        AggregationBuilder termsOffset = AggregationBuilders.terms("by_offset").field("offset");
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
 
         SearchResponse sr = client.prepareSearch(indexName).
-                            setQuery(boolTerms).
-                            addAggregation(termsOffset).execute().actionGet();
+                            setQuery(qbTime).
+                            setQuery(qb1).
+                            addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value1 = valueCount.getValue();
+        return value1;
+    }
+    /**
+     *慢请求统计1-2秒的请求
+     */
+    @Override
+    public Long selectSlowCount2(SlowCountBean slowCountBean) throws UnknownHostException{
 
-        Terms terms = sr.getAggregations().get("by_offset");
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
 
-        Map map = new HashMap();
-
-        //循环遍历bucket桶
-        for (Terms.Bucket entry: terms.getBuckets() ){
-            map.put(entry.getKey().toString(), entry.getDocCount());
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
         }
-        return map;
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(1001).to(2000,true);
+
+        //按offset字段进行分组
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                setQuery(qbTime).
+                setQuery(qb1).
+                addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value2 = valueCount.getValue();
+        return value2;
+    }
+    /**
+     *慢请求统计2-3秒的请求
+     */
+    @Override
+    public Long selectSlowCount3(SlowCountBean slowCountBean) throws UnknownHostException{
+
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
+
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(2001).to(3000,true);
+
+        //按offset字段进行分组
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                setQuery(qbTime).
+                setQuery(qb1).
+                addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value1 = valueCount.getValue();
+        return value1;
+    }
+    /**
+     *慢请求统计3-4秒的请求
+     */
+    @Override
+    public Long selectSlowCount4(SlowCountBean slowCountBean) throws UnknownHostException{
+
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
+
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(3001).to(4000,true);
+
+        //按offset字段进行分组
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                setQuery(qbTime).
+                setQuery(qb1).
+                addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value1 = valueCount.getValue();
+        return value1;
+    }
+    /**
+     *慢请求统计4-5秒的请求
+     */
+    @Override
+    public Long selectSlowCount5(SlowCountBean slowCountBean) throws UnknownHostException{
+
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
+
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(4001).to(5000,true);
+
+        //按offset字段进行分组
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                setQuery(qbTime).
+                setQuery(qb1).
+                addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value1 = valueCount.getValue();
+        return value1;
+    }
+    /**
+     *慢请求统计5-6秒的请求
+     */
+    @Override
+    public Long selectSlowCount6(SlowCountBean slowCountBean) throws UnknownHostException{
+
+        TransportClient client = getClient();
+        String index = slowCountBean.getIndex();
+        String beginTime = slowCountBean.getStartTime();
+        String endTime = slowCountBean.getEndTime();
+
+        String indexName = null;
+        if (index.equals("0")) {
+            indexName = "logstash-nginx-access-log";
+        }
+
+        //按时间进行范围查询
+        QueryBuilder qbTime = QueryBuilders.rangeQuery("create_time").from(beginTime).to(endTime);
+        //按请求0-1秒时间进行统计
+        QueryBuilder qb1 = QueryBuilders.rangeQuery("offset").from(5001).to(6000,true);
+
+        //按offset字段进行分组
+        AggregationBuilder termsCount = AggregationBuilders.count("offsetCount").field("offset");
+
+        SearchResponse sr = client.prepareSearch(indexName).
+                setQuery(qbTime).
+                setQuery(qb1).
+                addAggregation(termsCount).execute().actionGet();
+        ValueCount valueCount = sr.getAggregations().get("offsetCount");
+        Long value1 = valueCount.getValue();
+        return value1;
     }
 
 }
